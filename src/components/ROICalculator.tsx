@@ -1,7 +1,9 @@
 "use client"
 
+// At the top with your imports
 import React, { useState, ChangeEvent } from 'react';
 
+// After your interface definition
 interface Inputs {
   averageSalesValue: number;
   monthlyLeadVolume: number;
@@ -21,10 +23,10 @@ const ROICalculator: React.FC = () => {
     monthlyCost: 3000
   });
 
-  const handleInputChange = (e: ChangeEvent<HTMLInputElement>): void => {
-    const name = e.target.name as InputName;
-    const value = e.target.value;
-    setInputs((prev) => ({
+// Replace the handleInputChange function with this simpler version
+const handleInputChange = (event: { target: { name: string; value: string } }) => {
+    const { name, value } = event.target;
+    setInputs(prev => ({
       ...prev,
       [name]: parseFloat(value) || 0
     }));
