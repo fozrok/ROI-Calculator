@@ -1,9 +1,7 @@
 "use client"
 
-// At the top with your imports
-import React, { useState, ChangeEvent } from 'react';
+import React from 'react';
 
-// After your interface definition
 interface Inputs {
   averageSalesValue: number;
   monthlyLeadVolume: number;
@@ -12,10 +10,8 @@ interface Inputs {
   monthlyCost: number;
 }
 
-type InputName = keyof Inputs;
-
-const ROICalculator: React.FC = () => {
-  const [inputs, setInputs] = useState<Inputs>({
+const ROICalculator = () => {
+  const [inputs, setInputs] = React.useState<Inputs>({
     averageSalesValue: 2000,
     monthlyLeadVolume: 500,
     salesConversionRate: 1,
@@ -23,36 +19,29 @@ const ROICalculator: React.FC = () => {
     monthlyCost: 3000
   });
 
-// Replace the handleInputChange function with this simpler version
-const handleInputChange = (event: { target: { name: string; value: string } }) => {
-    const { name, value } = event.target;
-    setInputs(prev => ({
-      ...prev,
+  // Simplified handleInputChange
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setInputs(prevState => ({
+      ...prevState,
       [name]: parseFloat(value) || 0
     }));
   };
 
-  // Calculate pipeline value (20% of Monthly Leads * Avg Sales Value)
-  const pipelineValue: number = (inputs.monthlyLeadVolume * 0.20) * inputs.averageSalesValue;
+  // Rest of your calculations
+  const pipelineValue = (inputs.monthlyLeadVolume * 0.20) * inputs.averageSalesValue;
+  const monthlySales = (inputs.monthlyLeadVolume * (inputs.salesConversionRate / 100));
+  const monthlyRevenue = monthlySales * inputs.averageSalesValue;
+  const quarterlyRevenue = monthlyRevenue * 3;
+  const yearlyRevenue = monthlyRevenue * 12;
+  const firstMonthProfit = monthlyRevenue - inputs.monthlyCost - inputs.setupCost;
+  const firstQuarterProfit = (monthlyRevenue * 3) - (inputs.monthlyCost * 3) - inputs.setupCost;
+  const yearlyProfit = (monthlyRevenue * 12) - (inputs.monthlyCost * 12) - inputs.setupCost;
+  const monthlyProfit = monthlyRevenue - inputs.monthlyCost;
+  const monthsToBreakeven = Math.ceil(inputs.setupCost / monthlyProfit);
+  const isBreakevenPossible = monthlyProfit > 0;
 
-  // Calculate basic outputs
-  const monthlySales: number = (inputs.monthlyLeadVolume * (inputs.salesConversionRate / 100));
-  const monthlyRevenue: number = monthlySales * inputs.averageSalesValue;
-  const quarterlyRevenue: number = monthlyRevenue * 3;
-  const yearlyRevenue: number = monthlyRevenue * 12;
-
-  // Calculate profits
-  const firstMonthProfit: number = monthlyRevenue - inputs.monthlyCost - inputs.setupCost;
-  const firstQuarterProfit: number = (monthlyRevenue * 3) - (inputs.monthlyCost * 3) - inputs.setupCost;
-  const yearlyProfit: number = (monthlyRevenue * 12) - (inputs.monthlyCost * 12) - inputs.setupCost;
-
-  // Calculate breakeven
-  const monthlyProfit: number = monthlyRevenue - inputs.monthlyCost;
-  const monthsToBreakeven: number = Math.ceil(inputs.setupCost / monthlyProfit);
-  const isBreakevenPossible: boolean = monthlyProfit > 0;
-
-  // Format currency
-  const formatCurrency = (value: number): string => {
+  const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
